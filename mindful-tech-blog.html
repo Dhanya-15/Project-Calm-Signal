@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#7f9bbd">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Calm Signal - AI and Technology in Digital Mental Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#7f9bbd;
+    --haze:#b7c8dc;
+    --mist:#dce5f0;
+    --cloud:#f4f7fb;
+    --navy:#1f3556;
+    --ink:#0f1c30;
+    --white:#ffffff;
+    --glass:rgba(255,255,255,.22);
+    --glass-line:rgba(255,255,255,.45);
+    --font:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font);color:var(--ink);background:var(--cloud);line-height:1.6;overflow-x:hidden}
+  img{display:block;max-width:100%}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+
+  /* image fallback when offline */
+  .photo{background:linear-gradient(160deg,var(--sky),var(--navy))}
+  .photo img{width:100%;height:100%;object-fit:cover}
+  .photo img.broken{display:none}
+
+  /* ---------- NAV ---------- */
+  .nav{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:min(1100px,92%);z-index:20;
+    display:flex;align-items:center;justify-content:space-between;padding:12px 14px 12px 24px;
+    background:var(--glass);border:1px solid var(--glass-line);border-radius:999px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--white)}
+  .nav b{font-weight:500;font-size:18px;letter-spacing:.2px}
+  .nav ul{display:flex;gap:32px;list-style:none;font-size:14px;font-weight:300}
+  .nav ul a{text-decoration:none;opacity:.85}
+  .nav ul a:hover{opacity:1}
+  .pill{display:inline-block;background:var(--white);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;padding:11px 22px;border-radius:999px;border:0;cursor:pointer;font-family:var(--font)}
+  .pill.dark{background:var(--ink);color:var(--white)}
+  @media(max-width:760px){.nav ul{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;min-height:100vh;min-height:100svh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;
+    padding:150px max(5vw,28px) 150px;color:var(--white);overflow:hidden;
+    background:linear-gradient(180deg,#6f8db3 0%,#9db3cf 55%,#c9d6e6 85%,var(--cloud) 100%)}
+  .hero-bg{position:absolute;inset:0;opacity:.38;mix-blend-mode:soft-light}
+  .hero-bg img{width:100%;height:100%;object-fit:cover}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(180deg,transparent,var(--cloud));pointer-events:none}
+  .hero-copy{position:relative;z-index:2}
+  .hero h1{font-weight:300;font-size:clamp(40px,6vw,78px);line-height:1.04;letter-spacing:-1.5px;max-width:11ch}
+  .hero p{margin:26px 0 34px;max-width:46ch;font-weight:300;font-size:17px;opacity:.92}
+
+  .breath-wrap{position:relative;z-index:2;display:grid;place-items:center;perspective:900px}
+  .breath-stage{position:relative;width:min(420px,78vw);height:min(420px,78vw);display:grid;place-items:center;transform-style:preserve-3d;transition:transform .15s ease-out}
+  .ring{position:absolute;border-radius:50%;inset:0;border:1px solid rgba(255,255,255,.55);animation:breathe 8s ease-in-out infinite;--z:0px}
+  .ring.r1{inset:14%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.75),rgba(255,255,255,.18) 60%,rgba(255,255,255,.05));box-shadow:0 30px 80px rgba(31,53,86,.35), inset 0 0 40px rgba(255,255,255,.4);--z:40px}
+  .ring.r2{inset:4%;animation-delay:.25s;background:rgba(255,255,255,.10);--z:10px}
+  .ring.r3{inset:-8%;animation-delay:.5s;border-color:rgba(255,255,255,.28)}
+  @keyframes breathe{0%,100%{transform:translateZ(var(--z)) scale(.72)}50%{transform:translateZ(var(--z)) scale(1.08)}}
+  .breath-label{position:relative;z-index:3;text-align:center;transform:translateZ(80px);height:64px;width:200px}
+  .breath-label span{position:absolute;left:0;right:0;top:0;font-size:26px;font-weight:300;color:var(--ink);opacity:0}
+  .breath-label small{position:absolute;left:0;right:0;top:36px;font-size:13px;color:var(--navy);opacity:.8}
+  .bin{animation:inShow 8s linear infinite}
+  .bout{animation:outShow 8s linear infinite}
+  @keyframes inShow{0%{opacity:0}8%{opacity:1}44%{opacity:1}52%{opacity:0}100%{opacity:0}}
+  @keyframes outShow{0%,48%{opacity:0}58%{opacity:1}94%{opacity:1}100%{opacity:0}}
+
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:110px max(5vw,28px)}
+  .head{text-align:center;max-width:720px;margin:0 auto 40px}
+  .head h2{font-weight:400;font-size:clamp(30px,4vw,52px);line-height:1.1;letter-spacing:-1px}
+  .head p{margin-top:16px;color:#3b4c66;font-weight:300}
+
+  /* ---------- 3D RING CAROUSEL ---------- */
+  .tools{background:linear-gradient(180deg,var(--cloud),var(--mist) 60%,var(--cloud))}
+  .scene{height:calc(var(--ch) + 100px);overflow:hidden;perspective:1400px;position:relative;margin-top:30px;cursor:grab;touch-action:pan-y;user-select:none}
+  .scene:active{cursor:grabbing}
+  .ring3d{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);margin:calc(var(--ch) / -2) 0 0 calc(var(--cw) / -2);transform-style:preserve-3d}
+  .card3d{position:absolute;inset:0;border-radius:26px;overflow:hidden;color:var(--white);box-shadow:0 24px 50px rgba(15,28,48,.28);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--navy)}
+  .card3d .photo{position:absolute;inset:0}
+  .card3d::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,28,48,.05) 30%,rgba(15,28,48,.88))}
+  .card3d .txt{position:absolute;left:0;right:0;bottom:0;padding:22px;z-index:2}
+  .card3d h3{font-weight:500;font-size:21px;margin-bottom:6px}
+  .card3d p{font-size:13.5px;font-weight:300;opacity:.92;line-height:1.5}
+  .ctrl{display:flex;justify-content:center;gap:14px;margin-top:10px}
+  .ctrl button{width:50px;height:50px;border-radius:50%;border:1px solid var(--haze);background:var(--white);color:var(--ink);font-size:20px;cursor:pointer}
+  .ctrl button:hover{background:var(--ink);color:var(--white)}
+  .hint{text-align:center;font-size:13px;color:#51627d;margin-top:14px}
+
+  /* ---------- GOOD / BAD ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:34px;max-width:1100px;margin:0 auto;perspective:1200px}
+  .panel{position:relative;border-radius:28px;padding:38px;transform-style:preserve-3d;transition:transform .2s ease-out;overflow:hidden}
+  .panel.good{background:linear-gradient(160deg,#ffffff,var(--mist));border:1px solid var(--haze)}
+  .panel.bad{background:linear-gradient(160deg,var(--navy),var(--ink));color:var(--white)}
+  .panel h3{font-weight:400;font-size:28px;margin-bottom:18px;transform:translateZ(40px)}
+  .panel ul{list-style:none;display:grid;gap:14px;transform:translateZ(24px)}
+  .panel li{padding-left:22px;position:relative;font-weight:300}
+  .panel li::before{content:"";position:absolute;left:0;top:.6em;width:9px;height:9px;border-radius:50%;background:var(--sky)}
+  .panel.bad li::before{background:var(--haze)}
+  .panel li b{font-weight:600}
+  .panel .mini{height:150px;border-radius:18px;margin-top:26px;overflow:hidden;transform:translateZ(30px)}
+  @media(max-width:860px){.split{grid-template-columns:1fr}}
+
+  /* ---------- POLICIES: 3D DEPTH FLOW ---------- */
+  .policies{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;color:var(--white);
+    background:radial-gradient(120% 90% at 50% 0%,#4f6f98 0%,#1f3556 48%,#0f1c30 100%);padding:100px max(3vw,14px) 80px}
+  .policies .head h2{color:var(--white)}
+  .policies .head p{color:#c5d2e4}
+  .flow{position:relative;width:100%;max-width:1500px;margin:10px auto 0;height:clamp(500px,66vh,640px);perspective:1800px;perspective-origin:50% 45%;touch-action:pan-y;border-radius:30px}
+  .stage3{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .3s ease-out}
+  .orb{position:absolute;border-radius:50%;pointer-events:none}
+  .orb.o1{width:420px;height:420px;left:2%;top:-6%;background:radial-gradient(circle at 35% 30%,rgba(183,200,220,.6),rgba(127,155,189,.15) 60%,transparent 70%);transform:translateZ(-520px)}
+  .orb.o2{width:520px;height:520px;right:-2%;bottom:-14%;background:radial-gradient(circle at 60% 40%,rgba(220,229,240,.45),rgba(127,155,189,.12) 60%,transparent 70%);transform:translateZ(-700px)}
+  .orb.o3{width:260px;height:260px;right:16%;top:2%;border:1px solid rgba(255,255,255,.35);transform:translateZ(-300px)}
+  .orb.o4{width:180px;height:180px;left:12%;bottom:4%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);transform:translateZ(-200px)}
+  .pcard{position:absolute;top:0;bottom:0;left:0;right:0;margin:0 auto;width:min(960px,86vw);display:grid;grid-template-columns:1fr 1.05fr;border-radius:30px;overflow:hidden;
+    background:linear-gradient(160deg,#ffffff,var(--mist));color:var(--ink);box-shadow:0 40px 90px rgba(5,12,24,.55);cursor:pointer;
+    transition:transform .9s cubic-bezier(.6,.05,.2,1),opacity .9s ease,filter .9s ease;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .pcard .photo{height:100%;min-height:0}
+  .pbody{padding:clamp(22px,3.4vw,52px);display:flex;flex-direction:column;justify-content:center;overflow:auto}
+  .pbody .tag{font-size:13px;color:#51627d;margin-bottom:10px}
+  .pbody h3{font-weight:400;font-size:clamp(24px,3vw,40px);line-height:1.1;letter-spacing:-.8px;margin-bottom:14px}
+  .pbody p{font-weight:300;color:#2f405a;margin-bottom:16px;font-size:clamp(14.5px,1.4vw,17px)}
+  .pbody ul{list-style:none;display:grid;gap:10px}
+  .pbody li{padding-left:20px;position:relative;font-weight:300;color:#2f405a;font-size:clamp(14px,1.3vw,16px)}
+  .pbody li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;border-radius:50%;background:var(--sky)}
+  .pcard.sum{background:linear-gradient(160deg,#3a5a85,#1a2d4a);color:var(--white);border:1px solid var(--glass-line)}
+  .pcard.sum .tag{color:#c5d2e4}
+  .pcard.sum p{color:#dbe5f2}
+  .pctrl{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:28px}
+  .pctrl button.arrow{width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:var(--white);font-size:20px;cursor:pointer}
+  .pctrl button.arrow:hover{background:var(--white);color:var(--ink)}
+  .dots{display:flex;gap:10px}
+  .dots button{width:12px;height:12px;border-radius:50%;border:1px solid var(--white);background:transparent;cursor:pointer;padding:0}
+  .dots button[aria-current="true"]{background:var(--white);width:34px;border-radius:999px}
+  @media(max-width:760px){
+    .flow{height:clamp(580px,84vh,720px)}
+    .pcard{grid-template-columns:1fr;grid-template-rows:32% 1fr}
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink);color:#c5d2e4;padding:60px max(5vw,28px);text-align:center;font-weight:300}
+  footer b{display:block;color:var(--white);font-weight:500;font-size:22px;margin-bottom:10px}
+  footer p{max-width:62ch;margin:8px auto;font-size:14px}
+
+  @media (prefers-reduced-motion:reduce){
+    .ring,.bin,.bout{animation:none}
+    .ring{transform:translateZ(var(--z)) scale(.9)}.bin{opacity:1}
+    .cube{transition:none}
+  }
+
+  /* ---------- RESPONSIVE (phones, tablets, laptops, large screens) ---------- */
+  :root{--cw:270px;--ch:380px}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;padding-top:120px;padding-bottom:110px;gap:20px}
+    .hero h1{max-width:14ch}
+    section{padding-top:80px;padding-bottom:80px}
+    .policies{padding-top:80px;padding-bottom:70px}
+  }
+  @media(max-width:600px){
+    :root{--cw:220px;--ch:320px}
+    .nav{top:12px;padding:8px 8px 8px 16px}
+    .nav b{font-size:15px}
+    .pill{padding:10px 16px;font-size:13px}
+    .hero p{font-size:16px}
+    .panel{padding:26px}
+    .panel h3{font-size:24px}
+    .card3d h3{font-size:19px}
+  }
+  @media(max-width:380px){:root{--cw:196px;--ch:300px}}
+  @media(max-height:560px) and (orientation:landscape){.hero{min-height:auto}.policies{min-height:auto}}
+  @media(min-width:1800px){body{font-size:18px}}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="hero-bg photo"><img alt="" src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1600&q=70" onerror="this.classList.add('broken')"></div>
+
+  <nav class="nav" aria-label="Main">
+    <b>Project Calm Signal</b>
+    <ul>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#goodbad">Good and bad</a></li>
+      <li><a href="#policies">Policies</a></li>
+    </ul>
+    <a class="pill" href="#policies">Read policies</a>
+  </nav>
+
+  <div class="hero-copy">
+    <h1>Technology for a calmer mind</h1>
+    <p>Arjun's blog on how AI and technology are used in digital mental health: what helps, what can go wrong, and three policies to keep it safe.</p>
+    <a class="pill dark" href="#tools">Start exploring</a>
+  </div>
+
+  <div class="breath-wrap">
+    <div class="breath-stage" id="stage" aria-label="Breathing guide">
+      <div class="ring r3"></div>
+      <div class="ring r2"></div>
+      <div class="ring r1"></div>
+      <div class="breath-label" aria-live="off">
+        <span class="bin">Breathe in</span>
+        <span class="bout">Breathe out</span>
+        <small>Follow the circle</small>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 3D CAROUSEL ================= -->
+<section class="tools" id="tools">
+  <div class="head">
+    <h2>Five ways technology supports mental health</h2>
+    <p></p>
+  </div>
+
+  <div class="scene" id="scene">
+    <div class="ring3d" id="ring3d">
+      <article class="card3d"><div class="photo"><img alt="Woman meditating outdoors" loading="lazy" src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=700&q=70" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>Meditation apps</h3><p>Guided breathing and sleep sounds you can use anywhere.</p></div></article>
+      <article class="card3d"><div class="photo"><img alt="Person looking at a phone" loading="lazy" src="Images/chatbot.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>AI chatbots</h3><p>Instant, private conversation and coping tips at any hour.</p></div></article>
+      <article class="card3d"><div class="photo"><img alt="Doctor in a video consultation" loading="lazy" src="Images/online-therapy.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>Online therapy</h3><p>Video sessions with licensed professionals from home.</p></div></article>
+      <article class="card3d"><div class="photo"><img alt="Notebook and pen on a desk" loading="lazy" src="Images/mood-tracker.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>Mood trackers</h3><p>Daily check-ins that reveal patterns in sleep, stress and mood.</p></div></article>
+      <article class="card3d"><div class="photo"><img alt="Data dashboard on a screen" loading="lazy" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=700&q=70" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>Early-warning AI</h3><p>Software that spots signs of distress and nudges people to seek help.</p></div></article>
+      <article class="card3d"><div class="photo"><img alt="Calm lake and mountains" loading="lazy" src="Images/support group.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="txt"><h3>Support communities</h3><p>Moderated online groups where people share and feel less alone.</p></div></article>
+    </div>
+  </div>
+  <div class="ctrl">
+    <button id="prev" aria-label="Previous">&#8592;</button>
+    <button id="next" aria-label="Next">&#8594;</button>
+  </div>
+  <p class="hint"></p>
+</section>
+
+<!-- ================= GOOD / BAD ================= -->
+<section id="goodbad">
+  <div class="head">
+    <h2>The good and the bad</h2>
+    <p>Information gathered about the pros and cons of AI and technology in digital mental health.</p>
+  </div>
+  <div class="split">
+    <div class="panel good tilt">
+      <h3>Positive</h3>
+      <ul>
+        <li><b>Easy access -</b> Help is on your phone, even in remote areas.</li>
+        <li><b>Low cost -</b> Many apps are free or cheaper than regular therapy.</li>
+        <li><b>Always available -</b> Support for 24/7, not just office hours.</li>
+        <li><b>Less stigma -</b> People can start privately and at their own pace.</li>
+        <li><b>Early detection -</b> Tracking can show problems before they grow.</li>
+      </ul>
+      <div class="mini photo"><img alt="Sunrise over a calm field" loading="lazy" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=800&q=70" onerror="this.classList.add('broken')"></div>
+    </div>
+    <div class="panel bad tilt">
+      <h3>Negative</h3>
+      <ul>
+        <li><b>Privacy risk -</b> Very personal data can be leaked or sold.</li>
+        <li><b>No human touch -</b> A bot cannot truly understand or care like Human.</li>
+        <li><b>Wrong advice -</b> AI can make mistakes or sound too sure.</li>
+        <li><b>Emergencies -</b> Tools may unexpectedly fail to respond to a real crisis.</li>
+        <li><b>Unequal access -</b> Not everyone has a phone, internet or privacy at home.</li>
+      </ul>
+      <div class="mini photo"><img alt="Person in the dark looking at a phone screen" loading="lazy" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=70" onerror="this.classList.add('broken')"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= POLICIES ================= -->
+<section class="policies" id="policies">
+  <div class="head">
+    <h2>Three policies for safer digital mental health</h2>
+    <p></p>
+  </div>
+
+  <div class="flow" id="flow" tabindex="0" aria-label="Policy carousel. Use left and right arrow keys.">
+    <div class="stage3" id="stage3">
+      <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div>
+
+      <article class="pcard">
+        <div class="photo"><img alt="Padlock on a keyboard" loading="lazy" src="Images/privacy-consent.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="pbody">
+          <div class="tag">Policy 1</div>
+          <h3>Protect data and ask consent</h3>
+          <p>Mental health data is deeply personal, so users must stay in control of it.</p>
+          <ul>
+            <li>Collect only the data the service needs.</li>
+            <li>Encrypt it and never sell it.</li>
+            <li>Let users see, download and delete their data.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <div class="photo"><img alt="Hands holding each other in support" loading="lazy" src="Images/supervising.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="pbody">
+          <div class="tag">Policy 2</div>
+          <h3>Keep a human safety net</h3>
+          <p>AI can support people, but a real person must be there when it matters most.</p>
+          <ul>
+            <li>If AI detects a crisis, show helplines and connect to a person.</li>
+            <li>AI supports care but does not diagnose.</li>
+            <li>Licensed professionals review the advice the AI gives.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <div class="photo"><img alt="Diverse group of people smiling together" loading="lazy" src="Images/honest.png" onerror="this.classList.add('broken')"></div>
+        <div class="pbody">
+          <div class="tag">Policy 3</div>
+          <h3>Be honest and fair</h3>
+          <p>People should know what they are talking to, and everyone should get a fair chance to use it.</p>
+          <ul>
+            <li>Always tell users when they are talking to a bot.</li>
+            <li>Test the AI for bias and fix it regularly.</li>
+            <li>Offer free, low-data and multi-language options.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="pcard sum">
+        <div class="photo"><img alt="Person with arms raised in an open field" loading="lazy" src="Images/summary.jpg" onerror="this.classList.add('broken')"></div>
+        <div class="pbody">
+          <div class="tag">Summary</div>
+          <h3>Technology that helps without harm</h3>
+          <p>Technology can make mental health support easier to reach. With strong privacy, a human safety net and honest, fair design, it can help people without putting them at risk.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="pctrl">
+    <button class="arrow" id="pprev" aria-label="Previous policy">&#8592;</button>
+    <div class="dots" id="dots">
+      <button aria-label="Policy 1" aria-current="true"></button>
+      <button aria-label="Policy 2"></button>
+      <button aria-label="Policy 3"></button>
+      <button aria-label="Summary"></button>
+    </div>
+    <button class="arrow" id="pnext" aria-label="Next policy">&#8594;</button>
+  </div>
+</section>
+
+<footer>
+  <b>Project Calm Signal</b>
+  <p>This page is for learning and is not medical advice. If you or someone you know is in crisis, contact your local emergency number or a mental health helpline right away.</p>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- hero 3D tilt on pointer move ---- */
+  var stage = document.getElementById('stage');
+  if(!reduce){
+    document.querySelector('.hero').addEventListener('pointermove', function(e){
+      if(e.pointerType !== 'mouse'){ return; }
+      var x = (e.clientX / window.innerWidth - .5) * 2;
+      var y = (e.clientY / window.innerHeight - .5) * 2;
+      stage.style.transform = 'rotateY(' + (x*14) + 'deg) rotateX(' + (-y*12) + 'deg)';
+    });
+    document.querySelector('.hero').addEventListener('pointerleave', function(){
+      stage.style.transform = 'rotateY(0) rotateX(0)';
+    });
+  }
+
+  /* ---- 3D ring carousel ---- */
+  var scene = document.getElementById('scene');
+  var ring = document.getElementById('ring3d');
+  var cards = ring.querySelectorAll('.card3d');
+  var n = cards.length, step = 360 / n;
+  var angle = 0, target = 0, radius = 0, paused = false, dragging = false, startX = 0, startT = 0;
+
+  function layout(){
+    var w = cards[0].offsetWidth;
+    radius = Math.round((w / 2 + 24) / Math.tan(Math.PI / n));
+    for(var i = 0; i < n; i++){
+      cards[i].style.transform = 'rotateY(' + (i * step) + 'deg) translateZ(' + radius + 'px)';
+    }
+  }
+  function frame(){
+    if(!paused && !dragging && !reduce){ target -= 0.18; }
+    angle += (target - angle) * 0.08;
+    ring.style.transform = 'translateZ(' + (-radius) + 'px) rotateY(' + angle + 'deg)';
+    requestAnimationFrame(frame);
+  }
+  layout();
+  window.addEventListener('resize', layout);
+  requestAnimationFrame(frame);
+
+  scene.addEventListener('mouseenter', function(){ paused = true; });
+  scene.addEventListener('mouseleave', function(){ paused = false; });
+  scene.addEventListener('pointerdown', function(e){ dragging = true; startX = e.clientX; startT = target; scene.setPointerCapture(e.pointerId); });
+  scene.addEventListener('pointermove', function(e){ if(dragging){ target = startT + (e.clientX - startX) * 0.4; } });
+  function endDrag(){ dragging = false; }
+  scene.addEventListener('pointerup', endDrag);
+  scene.addEventListener('pointercancel', endDrag);
+  document.getElementById('next').addEventListener('click', function(){ target -= step; });
+  document.getElementById('prev').addEventListener('click', function(){ target += step; });
+
+  /* ---- good/bad panel tilt ---- */
+  if(!reduce){
+    document.querySelectorAll('.tilt').forEach(function(p){
+      p.addEventListener('pointermove', function(e){
+        if(e.pointerType !== 'mouse'){ return; }
+        var r = p.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - .5;
+        var y = (e.clientY - r.top) / r.height - .5;
+        p.style.transform = 'rotateY(' + (x*12) + 'deg) rotateX(' + (-y*10) + 'deg)';
+      });
+      p.addEventListener('pointerleave', function(){ p.style.transform = ''; });
+    });
+  }
+
+  /* ---- policies: 3D depth flow ---- */
+  var flow = document.getElementById('flow');
+  var stage3 = document.getElementById('stage3');
+  var pcs = flow.querySelectorAll('.pcard');
+  var dots = document.querySelectorAll('#dots button');
+  var pn = pcs.length, cur = 0, autoTimer, swiped = false, sx = 0;
+
+  function place(){
+    var w = pcs[0].offsetWidth, narrow = window.innerWidth < 760;
+    for(var i = 0; i < pn; i++){
+      var rel = ((i - cur + pn + 1) % pn) - 1;   /* -1 left, 0 centre, 1 right, 2 hidden at the back */
+      var x = 0, z = 0, r = 0, o = 1, b = 1, zi = 5;
+      if(rel === 0){ zi = 5; }
+      else if(rel === -1 || rel === 1){ x = rel * w * (narrow ? .8 : .66); z = -260; r = -rel * (narrow ? 38 : 46); b = .6; zi = 3; }
+      else { z = -700; o = 0; b = .4; zi = 1; }
+      var c = pcs[i];
+      c.style.transform = 'translateX(' + x + 'px) translateZ(' + z + 'px) rotateY(' + r + 'deg)';
+      c.style.opacity = o;
+      c.style.filter = 'brightness(' + b + ')';
+      c.style.webkitFilter = 'brightness(' + b + ')';
+      c.style.zIndex = zi;
+      c.style.pointerEvents = rel === 2 ? 'none' : 'auto';
+    }
+    for(var k = 0; k < dots.length; k++){ dots[k].setAttribute('aria-current', k === cur ? 'true' : 'false'); }
+  }
+  function go(i, byUser){
+    if(byUser){ clearInterval(autoTimer); }
+    cur = (i + pn) % pn;
+    place();
+  }
+  place();
+  window.addEventListener('resize', place);
+
+  document.getElementById('pnext').addEventListener('click', function(){ go(cur + 1, true); });
+  document.getElementById('pprev').addEventListener('click', function(){ go(cur - 1, true); });
+  dots.forEach(function(d, k){ d.addEventListener('click', function(){ go(k, true); }); });
+  pcs.forEach(function(c, k){ c.addEventListener('click', function(){ if(!swiped && k !== cur){ go(k, true); } }); });
+  flow.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight'){ go(cur + 1, true); }
+    if(e.key === 'ArrowLeft'){ go(cur - 1, true); }
+  });
+
+  /* swipe (touch, pen or mouse drag) */
+  flow.addEventListener('pointerdown', function(e){ swiped = false; sx = e.clientX; });
+  flow.addEventListener('pointerup', function(e){
+    var dx = e.clientX - sx;
+    if(Math.abs(dx) > 50){ swiped = true; go(cur + (dx < 0 ? 1 : -1), true); }
+  });
+
+  /* whole scene tilts with the mouse so the depth layers move at different speeds */
+  if(!reduce){
+    flow.addEventListener('pointermove', function(e){
+      if(e.pointerType !== 'mouse'){ return; }
+      var r = flow.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - .5;
+      var y = (e.clientY - r.top) / r.height - .5;
+      stage3.style.transform = 'rotateY(' + (x * 10) + 'deg) rotateX(' + (-y * 7) + 'deg)';
+    });
+    flow.addEventListener('pointerleave', function(){ stage3.style.transform = ''; });
+    autoTimer = setInterval(function(){ go(cur + 1); }, 7000);
+  }
+})();
+</script>
+</body>
+</html>
